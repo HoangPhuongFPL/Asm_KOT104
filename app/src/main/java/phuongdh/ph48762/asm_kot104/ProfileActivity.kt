@@ -204,6 +204,7 @@ fun ProfileScreen() {
 fun ProfileMenuItem(title: String, subtitle: String, onClick: () -> Unit) {
     Card(
         modifier = Modifier
+            .padding(bottom = 5.dp)
             .fillMaxWidth()
             .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(containerColor = Color.White),
