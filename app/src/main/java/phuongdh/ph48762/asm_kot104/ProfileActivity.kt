@@ -160,7 +160,7 @@ fun ProfileScreen() {
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "Bruno Pham",
+                text = "Do Hoang Phuong",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -169,7 +169,7 @@ fun ProfileScreen() {
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "bruno203@gmail.com",
+                text = "phuongdhph48762@gmail.com",
                 fontSize = 14.sp,
                 color = Color.Gray
             )

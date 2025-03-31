@@ -45,9 +45,9 @@ fun AddShippingAddress() {
 
     var fullName by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
-    var zipcode by remember { mutableStateOf("Pham Cong Thanh") }
+    var zipcode by remember { mutableStateOf("Do Hoang Phuong") }
     var country by remember { mutableStateOf("") }
-    var city by remember { mutableStateOf("New York") }
+    var city by remember { mutableStateOf("Ha Noi") }
     var district by remember { mutableStateOf("") }
 
     Scaffold(
@@ -92,7 +92,7 @@ fun AddShippingAddress() {
                 value = fullName,
                 onValueChange = { fullName = it },
                 label = { Text("Full name") },
-                placeholder = { Text("Ex: Bruno Pham") },
+                placeholder = { Text("Ex: Do Hoang Phuong") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
