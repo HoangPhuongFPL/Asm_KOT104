@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -19,12 +18,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,7 +37,7 @@ class CartActivity : ComponentActivity() {
             Asm_kot104Theme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.White
+                    color = Color(0xFFF5F5F5)
                 ) {
                     CartScreen()
                 }
@@ -58,7 +58,6 @@ data class CartItem(
 fun CartScreen() {
     val context = LocalContext.current
 
-    // Danh sách sản phẩm trong giỏ hàng
     val cartItems = remember {
         mutableStateListOf(
             CartItem("Minimal Stand", 25.00, R.drawable.sp2),
@@ -67,152 +66,251 @@ fun CartScreen() {
         )
     }
 
-    // Tính tổng tiền
     val totalPrice = cartItems.sumOf { it.price * it.quantity }
-
-    // Mã giảm giá
     var promoCode by remember { mutableStateOf("") }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "My cart",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        // Quay lại màn hình trước
-                        if (context is ComponentActivity) {
-                            context.finish()
-                        }
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color.Black
-                        )
-                    }
-                }
-            )
-        }
+        containerColor = Color(0xFFF5F5F5)
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp)
         ) {
-            // Danh sách sản phẩm trong giỏ hàng
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                items(cartItems) { item ->
-                    CartItemCard(
-                        item = item,
-                        onQuantityChange = { newQuantity ->
-                            val index = cartItems.indexOf(item)
-                            if (index != -1) {
-                                cartItems[index] = item.copy(quantity = newQuantity)
-                            }
-                        },
-                        onRemove = {
-                            cartItems.remove(item)
-                        }
-                    )
-                }
-            }
-
-            // Mã giảm giá
-            Row(
+            // Header với gradient
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedTextField(
-                    value = promoCode,
-                    onValueChange = { promoCode = it },
-                    placeholder = { Text("Enter your promo code") },
-                    modifier = Modifier.weight(1f),
-                    singleLine = true,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color.LightGray,
-                        unfocusedBorderColor = Color.LightGray
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                Color(0xFF4A90E2),
+                                Color(0xFF5B9FE3)
+                            )
+                        )
                     )
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                IconButton(
-                    onClick = { /* Xử lý áp dụng mã giảm giá */ },
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color.Black)
+                    .padding(horizontal = 20.dp, vertical = 20.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowForward,
-                        contentDescription = "Apply",
-                        tint = Color.White
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        IconButton(
+                            onClick = {
+                                if (context is ComponentActivity) {
+                                    context.finish()
+                                }
+                            },
+                            modifier = Modifier
+                                .size(45.dp)
+                                .background(Color.White.copy(alpha = 0.25f), CircleShape)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back",
+                                tint = Color.White,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+
+                        Column {
+                            Text(
+                                text = "Shopping Cart",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = Color.White.copy(alpha = 0.9f)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "${cartItems.size} Items",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                    }
+
+                    // Badge số lượng
+                    Box(
+                        modifier = Modifier
+                            .size(45.dp)
+                            .background(Color.White.copy(alpha = 0.25f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "${cartItems.size}",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
                 }
             }
 
-            // Tổng tiền
-            Row(
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Content
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp)
             ) {
-                Text(
-                    text = "Total:",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Gray
-                )
+                // Danh sách sản phẩm
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(15.dp),
+                    contentPadding = PaddingValues(bottom = 20.dp)
+                ) {
+                    items(cartItems) { item ->
+                        CartItemCard(
+                            item = item,
+                            onQuantityChange = { newQuantity ->
+                                val index = cartItems.indexOf(item)
+                                if (index != -1) {
+                                    cartItems[index] = item.copy(quantity = newQuantity)
+                                }
+                            },
+                            onRemove = {
+                                cartItems.remove(item)
+                            }
+                        )
+                    }
+                }
 
-                Text(
-                    text = "$ ${String.format("%.2f", totalPrice)}",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
+                // Promo Code Section
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    ),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 2.dp
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Promo",
+                            tint = Color(0xFF4A90E2),
+                            modifier = Modifier.size(24.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = promoCode,
+                            onValueChange = { promoCode = it },
+                            placeholder = {
+                                Text(
+                                    "Enter promo code",
+                                    fontSize = 14.sp,
+                                    color = Color(0xFF9E9E9E)
+                                )
+                            },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color(0xFF4A90E2),
+                                unfocusedBorderColor = Color(0xFFE0E0E0),
+                                focusedTextColor = Color(0xFF212121),
+                                unfocusedTextColor = Color(0xFF212121)
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+
+                        IconButton(
+                            onClick = { },
+                            modifier = Modifier
+                                .size(48.dp)
+                                .background(Color(0xFF4A90E2), RoundedCornerShape(12.dp))
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = "Apply",
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+                }
+
+                // Total Section
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    ),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 3.dp
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Total:",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0xFF757575)
+                            )
+
+                            Text(
+                                text = "$${String.format("%.2f", totalPrice)}",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF4A90E2)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Button(
+                            onClick = {
+                                val intent = Intent(context, CheckoutActivity::class.java)
+                                context.startActivity(intent)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(54.dp)
+                                .shadow(4.dp, RoundedCornerShape(12.dp)),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF4A90E2)
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "Proceed to Checkout",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
-
-            // Nút thanh toán
-            Button(
-                onClick = {
-                    val intent = Intent(context, CheckoutActivity::class.java)
-                    context.startActivity(intent)
-                          },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Black
-                ),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(
-                    text = "Check out",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -224,9 +322,8 @@ fun CartItemCard(
     onRemove: () -> Unit
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
@@ -237,73 +334,51 @@ fun CartItemCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Hình ảnh sản phẩm
-            Image(
-                painter = painterResource(id = item.image),
-                contentDescription = item.name,
-                contentScale = ContentScale.Crop,
+            Box(
                 modifier = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            )
+                    .size(90.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xFFF8F9FA))
+            ) {
+                Image(
+                    painter = painterResource(id = item.image),
+                    contentDescription = item.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(4.dp)
+                )
+            }
 
             // Thông tin sản phẩm
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 12.dp)
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
                     text = item.name,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF212121)
                 )
-
-                Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "$ ${String.format("%.2f", item.price)}",
-                    fontSize = 16.sp,
+                    text = "$${String.format("%.2f", item.price)}",
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = Color(0xFF4A90E2)
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Điều chỉnh số lượng
+                // Quantity Controls
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    IconButton(
-                        onClick = {
-                            if (item.quantity < 99) {
-                                onQuantityChange(item.quantity + 1)
-                            }
-                        },
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(Color.LightGray.copy(alpha = 0.3f))
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.remove),
-                            contentDescription = "Increase",
-                            tint = Color.Black,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-
-                    Text(
-                        text = String.format("%02d", item.quantity),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    )
-
                     IconButton(
                         onClick = {
                             if (item.quantity > 1) {
@@ -311,14 +386,44 @@ fun CartItemCard(
                             }
                         },
                         modifier = Modifier
-                            .size(24.dp)
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(Color.LightGray.copy(alpha = 0.3f))
+                            .size(32.dp)
+                            .background(
+                                Color(0xFF4A90E2).copy(alpha = 0.1f),
+                                RoundedCornerShape(8.dp)
+                            )
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.remove),
+                            contentDescription = "Decrease",
+                            tint = Color(0xFF4A90E2),
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+
+                    Text(
+                        text = String.format("%02d", item.quantity),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF212121)
+                    )
+
+                    IconButton(
+                        onClick = {
+                            if (item.quantity < 99) {
+                                onQuantityChange(item.quantity + 1)
+                            }
+                        },
+                        modifier = Modifier
+                            .size(32.dp)
+                            .background(
+                                Color(0xFF4A90E2).copy(alpha = 0.1f),
+                                RoundedCornerShape(8.dp)
+                            )
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = "Decrease",
-                            tint = Color.Black,
+                            contentDescription = "Increase",
+                            tint = Color(0xFF4A90E2),
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -329,15 +434,15 @@ fun CartItemCard(
             IconButton(
                 onClick = onRemove,
                 modifier = Modifier
-                    .size(32.dp)
-                    .clip(CircleShape)
-                    .background(Color.LightGray.copy(alpha = 0.3f))
+                    .size(36.dp)
+                    .shadow(2.dp, CircleShape)
+                    .background(Color.White, CircleShape)
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = "Remove",
-                    tint = Color.Gray,
-                    modifier = Modifier.size(16.dp)
+                    tint = Color(0xFF9E9E9E),
+                    modifier = Modifier.size(18.dp)
                 )
             }
         }

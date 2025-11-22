@@ -8,9 +8,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -21,12 +24,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,7 +45,7 @@ class HomeActivity : ComponentActivity() {
             Asm_kot104Theme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.White
+                    color = Color(0xFFF5F5F5)
                 ) {
                     HomeScreen()
                 }
@@ -63,8 +69,8 @@ data class Product(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
-    // Lấy context hiện tại để sử dụng cho Intent
     val context = LocalContext.current
+    var selectedCategory by remember { mutableStateOf("Popular") }
 
     val categories = listOf(
         Category("Popular", R.drawable.star, isSelected = true),
@@ -82,67 +88,29 @@ fun HomeScreen() {
     )
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Make home",
-                            fontSize = 14.sp,
-                            color = Color.Gray
-                        )
-                        Text(
-                            text = "BEAUTIFUL",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = { /* Xử lý tìm kiếm */ }) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search",
-                            tint = Color.Gray
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {
-                        val intent = Intent(context, CartActivity::class.java)
-                        context.startActivity(intent)
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.ShoppingCart,
-                            contentDescription = "Cart",
-                            tint = Color.Gray
-                        )
-                    }
-                }
-            )
-        },
+        containerColor = Color(0xFFF5F5F5),
         bottomBar = {
             NavigationBar(
                 containerColor = Color.White,
-                contentColor = Color.Gray
+                modifier = Modifier
+                    .height(70.dp)
+                    .shadow(8.dp, RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                    .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
             ) {
                 NavigationBarItem(
                     selected = true,
-                    onClick = { /* Xử lý home */ },
+                    onClick = { },
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Home,
-                            contentDescription = "Home"
+                            contentDescription = "Home",
+                            modifier = Modifier.size(26.dp)
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Black,
-                        unselectedIconColor = Color.Gray,
-                        indicatorColor = Color.White
+                        selectedIconColor = Color(0xFF4A90E2),
+                        unselectedIconColor = Color(0xFF9E9E9E),
+                        indicatorColor = Color(0xFFE3F2FD)
                     )
                 )
 
@@ -155,13 +123,14 @@ fun HomeScreen() {
                     icon = {
                         Icon(
                             painter = painterResource(id = R.drawable.bookmark),
-                            contentDescription = "Bookmark"
+                            contentDescription = "Bookmark",
+                            modifier = Modifier.size(26.dp)
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Black,
-                        unselectedIconColor = Color.Gray,
-                        indicatorColor = Color.White
+                        selectedIconColor = Color(0xFF4A90E2),
+                        unselectedIconColor = Color(0xFF9E9E9E),
+                        indicatorColor = Color(0xFFE3F2FD)
                     )
                 )
 
@@ -174,13 +143,14 @@ fun HomeScreen() {
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Notifications,
-                            contentDescription = "Notifications"
+                            contentDescription = "Notifications",
+                            modifier = Modifier.size(26.dp)
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Black,
-                        unselectedIconColor = Color.Gray,
-                        indicatorColor = Color.White
+                        selectedIconColor = Color(0xFF4A90E2),
+                        unselectedIconColor = Color(0xFF9E9E9E),
+                        indicatorColor = Color(0xFFE3F2FD)
                     )
                 )
 
@@ -193,13 +163,14 @@ fun HomeScreen() {
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Person,
-                            contentDescription = "Profile"
+                            contentDescription = "Profile",
+                            modifier = Modifier.size(26.dp)
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Black,
-                        unselectedIconColor = Color.Gray,
-                        indicatorColor = Color.White
+                        selectedIconColor = Color(0xFF4A90E2),
+                        unselectedIconColor = Color(0xFF9E9E9E),
+                        indicatorColor = Color(0xFFE3F2FD)
                     )
                 )
             }
@@ -210,37 +181,112 @@ fun HomeScreen() {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Categories
-            Row(
+            // Header với padding cân đối
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp, horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                Color(0xFF4A90E2),
+                                Color(0xFF5B9FE3)
+                            )
+                        )
+                    )
+                    .padding(horizontal = 20.dp, vertical = 20.dp)
             ) {
-                categories.forEach { category ->
-                    CategoryItem(
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = "Hello!",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.White.copy(alpha = 0.9f)
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Find Your Furniture",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        IconButton(
+                            onClick = { },
+                            modifier = Modifier
+                                .size(45.dp)
+                                .background(Color.White.copy(alpha = 0.25f), CircleShape)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Search",
+                                tint = Color.White,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+
+                        IconButton(
+                            onClick = {
+                                val intent = Intent(context, CartActivity::class.java)
+                                context.startActivity(intent)
+                            },
+                            modifier = Modifier
+                                .size(45.dp)
+                                .background(Color.White.copy(alpha = 0.25f), CircleShape)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ShoppingCart,
+                                contentDescription = "Cart",
+                                tint = Color.White,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Categories - Horizontal Scroll
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(categories) { category ->
+                    CategoryChip(
                         category = category,
-                        isSelected = category.isSelected
+                        isSelected = selectedCategory == category.name,
+                        onClick = { selectedCategory = category.name }
                     )
                 }
             }
 
-            // Products Grid
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Products Grid với spacing cân đối
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(15.dp),
+                verticalArrangement = Arrangement.spacedBy(18.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(products) { product ->
-                    ProductItem(
+                    ModernProductCard(
                         product = product,
                         onClick = {
-                            // Chỉ xử lý sự kiện click cho sản phẩm "Minimal Stand"
                             if (product.name == "Minimal Stand") {
                                 val intent = Intent(context, ProductDetailActivity::class.java)
-                                // Truyền thông tin sản phẩm qua Intent
                                 intent.putExtra("productName", product.name)
                                 intent.putExtra("productPrice", product.price)
                                 intent.putExtra("productImage", product.image)
@@ -255,106 +301,145 @@ fun HomeScreen() {
 }
 
 @Composable
-fun CategoryItem(
+fun CategoryChip(
     category: Category,
-    isSelected: Boolean
+    isSelected: Boolean,
+    onClick: () -> Unit
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(60.dp)
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(20.dp),
+        color = if (isSelected) Color(0xFF4A90E2) else Color.White,
+        modifier = Modifier
+            .height(42.dp)
+            .shadow(
+                elevation = if (isSelected) 6.dp else 3.dp,
+                shape = RoundedCornerShape(20.dp)
+            )
     ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(8.dp)),
-
-            contentAlignment = Alignment.Center
+        Row(
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Image(
                 painter = painterResource(id = category.icon),
                 contentDescription = category.name,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(18.dp)
+            )
+
+            Text(
+                text = category.name,
+                fontSize = 14.sp,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                color = if (isSelected) Color.White else Color(0xFF424242)
             )
         }
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Text(
-            text = category.name,
-            fontSize = 12.sp,
-            color = if (isSelected) Color.Black else Color.Gray,
-            textAlign = TextAlign.Center
-        )
     }
 }
 
 @Composable
-fun ProductItem(
+fun ModernProductCard(
     product: Product,
     onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(250.dp)
-            .clickable(onClick = onClick),  // Thêm sự kiện click vào Card
-        shape = RoundedCornerShape(8.dp),
+            .aspectRatio(0.75f)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.LightGray.copy(alpha = 0.1f)
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 3.dp,
+            pressedElevation = 6.dp
         )
     ) {
-        Column {
-            // Product Image
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Image Section - 65% chiều cao
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp)
+                    .weight(0.65f)
+                    .background(Color(0xFFF8F9FA))
             ) {
                 Image(
                     painter = painterResource(id = product.image),
                     contentDescription = product.name,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp)
                 )
 
-                // Bookmark icon
+                // Bookmark Icon
                 Box(
                     modifier = Modifier
-                        .padding(8.dp)
-                        .size(30.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color.White.copy(alpha = 0.8f))
-                        .align(Alignment.BottomEnd),
+                        .padding(10.dp)
+                        .size(32.dp)
+                        .shadow(3.dp, CircleShape)
+                        .background(Color.White, CircleShape)
+                        .align(Alignment.TopEnd),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.bookmark),
                         contentDescription = "Bookmark",
-                        tint = Color.Gray,
+                        tint = Color(0xFF4A90E2),
                         modifier = Modifier.size(16.dp)
                     )
                 }
             }
 
-            // Product Info
+            // Info Section - 35% chiều cao
             Column(
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.35f)
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = product.name,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF212121),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    lineHeight = 18.sp
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "$${product.price}0",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF4A90E2)
+                    )
 
-                Text(
-                    text = "$ ${product.price}0",
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
+                    Surface(
+                        shape = CircleShape,
+                        color = Color(0xFF4A90E2),
+                        modifier = Modifier.size(30.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Add to cart",
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                }
             }
         }
     }

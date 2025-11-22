@@ -20,6 +20,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -37,7 +39,7 @@ class FavoritesActivity : ComponentActivity() {
             Asm_kot104Theme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.White
+                    color = Color(0xFFF5F5F5)
                 ) {
                     FavoritesScreen()
                 }
@@ -55,7 +57,6 @@ data class FavoriteItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritesScreen() {
-    // Lấy context hiện tại để sử dụng cho Intent
     val context = LocalContext.current
 
     val favoriteItems = listOf(
@@ -67,43 +68,14 @@ fun FavoritesScreen() {
     )
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Favorites",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { /* Xử lý tìm kiếm */ }) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search",
-                            tint = Color.Gray
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {
-                        val intent = Intent(context, CartActivity::class.java)
-                        context.startActivity(intent)
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.ShoppingCart,
-                            contentDescription = "Cart",
-                            tint = Color.Gray
-                        )
-                    }
-                }
-            )
-        },
+        containerColor = Color(0xFFF5F5F5),
         bottomBar = {
             NavigationBar(
                 containerColor = Color.White,
-                contentColor = Color.Gray
+                modifier = Modifier
+                    .height(70.dp)
+                    .shadow(8.dp, RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                    .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
             ) {
                 NavigationBarItem(
                     selected = false,
@@ -114,29 +86,31 @@ fun FavoritesScreen() {
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Home,
-                            contentDescription = "Home"
+                            contentDescription = "Home",
+                            modifier = Modifier.size(26.dp)
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Black,
-                        unselectedIconColor = Color.Gray,
-                        indicatorColor = Color.White
+                        selectedIconColor = Color(0xFF4A90E2),
+                        unselectedIconColor = Color(0xFF9E9E9E),
+                        indicatorColor = Color(0xFFE3F2FD)
                     )
                 )
 
                 NavigationBarItem(
                     selected = true,
-                    onClick = { /* Xử lý bookmark */ },
+                    onClick = { },
                     icon = {
                         Icon(
                             painter = painterResource(id = R.drawable.bookmark),
-                            contentDescription = "Bookmark"
+                            contentDescription = "Bookmark",
+                            modifier = Modifier.size(26.dp)
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Black,
-                        unselectedIconColor = Color.Gray,
-                        indicatorColor = Color.White
+                        selectedIconColor = Color(0xFF4A90E2),
+                        unselectedIconColor = Color(0xFF9E9E9E),
+                        indicatorColor = Color(0xFFE3F2FD)
                     )
                 )
 
@@ -149,13 +123,14 @@ fun FavoritesScreen() {
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Notifications,
-                            contentDescription = "Notifications"
+                            contentDescription = "Notifications",
+                            modifier = Modifier.size(26.dp)
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Black,
-                        unselectedIconColor = Color.Gray,
-                        indicatorColor = Color.White
+                        selectedIconColor = Color(0xFF4A90E2),
+                        unselectedIconColor = Color(0xFF9E9E9E),
+                        indicatorColor = Color(0xFFE3F2FD)
                     )
                 )
 
@@ -168,59 +143,137 @@ fun FavoritesScreen() {
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Person,
-                            contentDescription = "Profile"
+                            contentDescription = "Profile",
+                            modifier = Modifier.size(26.dp)
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Black,
-                        unselectedIconColor = Color.Gray,
-                        indicatorColor = Color.White
+                        selectedIconColor = Color(0xFF4A90E2),
+                        unselectedIconColor = Color(0xFF9E9E9E),
+                        indicatorColor = Color(0xFFE3F2FD)
                     )
                 )
             }
         }
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            LazyColumn(
+            // Header đồng bộ với HomeScreen
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
+                    .fillMaxWidth()
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                Color(0xFF4A90E2),
+                                Color(0xFF5B9FE3)
+                            )
+                        )
+                    )
+                    .padding(horizontal = 20.dp, vertical = 20.dp)
             ) {
-                items(favoriteItems) { item ->
-                    FavoriteItemCard(item = item)
-                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = "Your Collection",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.White.copy(alpha = 0.9f)
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Favorites",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
 
-                item {
-                    Spacer(modifier = Modifier.height(60.dp)) // Để tránh bị che bởi nút "Add all to my cart"
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        IconButton(
+                            onClick = { },
+                            modifier = Modifier
+                                .size(45.dp)
+                                .background(Color.White.copy(alpha = 0.25f), CircleShape)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Search",
+                                tint = Color.White,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+
+                        IconButton(
+                            onClick = {
+                                val intent = Intent(context, CartActivity::class.java)
+                                context.startActivity(intent)
+                            },
+                            modifier = Modifier
+                                .size(45.dp)
+                                .background(Color.White.copy(alpha = 0.25f), CircleShape)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ShoppingCart,
+                                contentDescription = "Cart",
+                                tint = Color.White,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                    }
                 }
             }
 
-            // Nút "Add all to my cart"
-            Button(
-                onClick = { /* Xử lý thêm tất cả vào giỏ hàng */ },
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Content
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(horizontal = 16.dp)
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Black
-                ),
-                shape = RoundedCornerShape(8.dp)
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp)
             ) {
-                Text(
-                    text = "Add all to my cart",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White
-                )
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(15.dp),
+                    contentPadding = PaddingValues(bottom = 90.dp)
+                ) {
+                    items(favoriteItems) { item ->
+                        FavoriteItemCard(item = item)
+                    }
+                }
+
+                // Nút "Add all to my cart" cố định ở bottom
+                Button(
+                    onClick = { },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp)
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 16.dp)
+                        .shadow(8.dp, RoundedCornerShape(12.dp)),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF4A90E2)
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "Add all to my cart",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    )
+                }
             }
         }
     }
@@ -231,85 +284,98 @@ fun FavoriteItemCard(item: FavoriteItem) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp),
-        shape = RoundedCornerShape(8.dp),
+            .height(100.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
+            defaultElevation = 3.dp
         )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Hình ảnh sản phẩm
-            Image(
-                painter = painterResource(id = item.image),
-                contentDescription = item.name,
-                contentScale = ContentScale.Crop,
+            Box(
                 modifier = Modifier
-                    .size(64.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            )
+                    .size(76.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xFFF8F9FA))
+            ) {
+                Image(
+                    painter = painterResource(id = item.image),
+                    contentDescription = item.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(4.dp)
+                )
+            }
 
             // Thông tin sản phẩm
             Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 12.dp)
+                    .weight(1f),
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = item.name,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF212121)
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = "$ ${item.price}0",
-                    fontSize = 16.sp,
+                    text = "$${item.price}0",
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = Color(0xFF4A90E2)
                 )
             }
 
-            // Nút xóa
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .clip(CircleShape)
-                    .background(Color.LightGray.copy(alpha = 0.3f)),
-                contentAlignment = Alignment.Center
+            // Action buttons
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.End
             ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Remove",
-                    tint = Color.Gray,
-                    modifier = Modifier.size(16.dp)
-                )
-            }
+                // Nút xóa
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .shadow(2.dp, CircleShape)
+                        .background(Color.White, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Remove",
+                        tint = Color(0xFF9E9E9E),
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
 
-            // Icon giỏ hàng
-            Box(
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .size(32.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(Color.LightGray.copy(alpha = 0.3f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.shopping),
-                    contentDescription = "Add to cart",
-                    tint = Color.Black,
-                    modifier = Modifier.size(16.dp)
-                )
+                // Icon giỏ hàng
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .shadow(2.dp, RoundedCornerShape(10.dp))
+                        .background(Color(0xFF4A90E2), RoundedCornerShape(10.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.shopping),
+                        contentDescription = "Add to cart",
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
         }
     }
